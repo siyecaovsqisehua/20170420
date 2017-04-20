@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <h3>实现实时通讯</h3>
+    <textarea id="content" cols="30" rows="10"></textarea>
+    <br>
+    <br>
+    <input type="text" id="msg">
+    <input type="submit" value="提交" id="btn">
+    <script src="/socket.io/socket.io.js "></script>
+    <script>
+    // 跟服务器进行通讯
+    // 和服务器的端口号保持一致
+    var socket = io('http://localhost:3000');
+
+    var btn = document.getElementById('btn');
+    var msg = document.getElementById('msg');
+    var content = document.getElementById('content');
+
+    // 当发生点击的时候，触发服务器的sendMsg事件，将当前客户端的消息发送到服务器
+    btn.onclick = function() {
+        // 获取用户输入的内容
+        var str = msg.value;
+
+        socket.emit('sendMsg', str);
+    }
+
+    // 客户端绑定news事件
+    socket.on('news', function(msg) {
+        // console.log(msg);
+        // 接收到服务器的消息，并写入到textarea文本域中
+        content.value += msg + "\n";
+    })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+NodeJS特点：
+1.异步I/O
+     1.1 什么是异步I/O
+          $.get(‘1.php’,function(msg){
+               console.log(‘ajax返回结果')
+          })
+          console.log('程序继续执行');
+
+          fs.readFile(‘1.txt’,function(err,data){
+               console.log(‘文件读取结果')
+          })
+          console.log('程序继续执行');
+
+          mongo.connect(url,function(err,db){
+               console.log('连接结果');
+          })
+          console.log(‘程序继续被执行');
+
+          总结：I/O的全称：Input/Output输入输出设备，在程序中，可以这样理解：
+               将一些操作（文件读取，网络请求，连接mongodb等）比做就是文件的读取和写入（I/O），文件I/O是需要消耗时间的，所以在这里我们采用异步I/O，也就是说，遇到I/O操作，我们的程序就跟孙猴子一样，进行分身进行各项操作，从而提升效率
+     1.2 Node那些地方用到异步I/O
+          文件，网络请求，连接mongdb
+
+     1.3 为什么要用异步I/O
+          同步I/O执行时间是上述三个执行之和，异步I/O执行时间是上述三个使用时间的最大值
+
+     面试题：
+     针对计算机内核或者说操作系统的
+     阻塞I/O：一定得等到系统内核层完成所有操作后，调用才结束（必须等待结果再返回）
+     非阻塞I/O：不等待结果，直接返回（需要通过轮询来确认该操作是否完成，效率不高）
+
+     针对应用程序
+     同步I/O：等待当前程序调用结束，再继续执行下一步代码（但是当前程序中有可能还有非阻塞程序）
+     异步I/O：在非阻塞I/O的基础上，无需通过遍历或者事件唤醒等方式轮询，可以直接处理下一个任务，只需要在I/O完成后通过信号或回调函数将数据传递给应用程序即可。
+
+2.事件与回调函数
+     // post请求接收传值
+     http.createServer(function(req,res){
+          var postData = ‘';
+
+          // 侦听请求的data事件
+          req.on(‘data’,function(chunk){
+               postData += chunk;
+          });
+          // 请求结束
+          req.on(‘end’,function(){
+               res.end(postData);
+          })
+     }).listen(3000);
+
+     // 可读流的事件
+     readerStream.on(‘data’,function(chunk){
+          data += chunk;
+     })
+     readerStream.on(‘end’,function(err){
+          console.log(data);
+     })
+     readerStream.on(‘error’,function(err){
+          console.log(err.stack);
+     })
+     // 可写流事件
+     writerStream.on(‘finish’,function(){
+          console.log(‘写入完成');
+     })
+     writerStream.on(‘error’,function(err){
+          console.log(err.stack);
+     })
+     总结：Node.js中大部分的模块，都继承自Event模块，Event模块（events.EventEmitter）是一个简单的事件监听器模式的实现。具有addListener，on，once，removeListener，removeAllListeners，emit等基本的事件监听模式的方法实现
+          当node启动之后，就开启一个循环，每一次循环都需要检测是否有事件等待处理，如果有，就取出事件及其相关的回调函数，并执行他们，接着继续执行下一次的循环。
+          正是因为上面的结果，才使得回调函数在Node中非常普遍，所以Node的一个重要基础：事件循环和回调函数
+
+3.单线程：NodeJS是单线程
+     进程：计算机中的程序关于某数据集合的一次运行活动，是系统进行资源分配和调度的基本单位，是操作系统结构的基础
+     线程：程序执行流的最小单元
+
+     进程：工厂中每一个分厂（海尔的洗衣机和空调分厂）
+     线程：每一个厂中的工人
+
+          多线程：同时运行多个线程，带来的问题
+               1.状态同步
+               2.死锁
+               3.线程切换性能开销比较大
+          单线程弥补了上面多线程的不足
+          单线程的缺点：
+          1.无法利用多核CPU
+          2.错误会引起整个应用退出
+          3.大量计算占用CPU导致无法继续调用异步I/O
+4.跨平台（Windows，Linux，Mac OS）
+
+
+NodeJS结束，需要掌握
+1.比之前所学的ECMAScript新增内容
+     Buffer
+     文件系统
+     模块（模块在ECMAScript中也已经有体现）
+          系统模块（c语言）：fs url querystring path
+          第三方模块（文件模块JS语言）：ejs mongodb socket.io multer express supervisor
+     事件处理（简单）
+          on
+          emit
+2.http模块
+     http.createServer(function(req,res){
+          res.writeHead()
+          res.end();
+     })
+
+3.MongoDB基本使用
+     命令行熟悉
+     NodeJS连接MongoDB（记住）CURD
+
+4.路由 = 请求方式 + 路径
+
+5.利用express做CURD（主要就是思路）
+     三个页面（列表页，添加页面，修改页面）
+     三个操作（增加，删除，修改）

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    
+    #bg {
+        background: rgba(255, 0, 0, 0.3);
+        position: absolute;
+        height: 100%;
+        width: 100%;
+    }
+    
+    #username {
+        margin: 0 auto;
+        width: 500px;
+        height: 50px;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="bg">
+        <input type="text" name="username" id="username">
+        <button id="sure">点击输入你的名字</button>
+    </div>
+    <textarea id="show" cols="100" rows="20"></textarea>
+    <br>
+    <input type="text" id="msg">
+    <button id="btn">发送</button>
+    <script src="/socket.io/socket.io.js "></script>
+    <script>
+    var username = document.getElementById('username');
+    var sure = document.getElementById('sure');
+    var bg = document.getElementById('bg');
+
+    var btn = document.getElementById('btn');
+    var msg = document.getElementById('msg');
+    var show = document.getElementById('show');
+    var socket = io('http://localhost:3000');
+
+    var uname;
+
+    sure.onclick = function() {
+        var value = username.value;
+        if (value == '') {
+            alert('请输入你的姓名');
+        } else {
+            // bg消失
+            bg.style.display = 'none';
+            uname = value;
+        }
+
+    }
+
+    btn.onclick = function() {
+        // 获取用户输入的信息
+        var text = msg.value;
+        socket.emit('sendMsg', {
+            "username": uname,
+            "msg": text
+        });
+    }
+
+    socket.on('news', function(data) {
+        console.log(data);
+        show.value += data.username + ":" + data.msg + "\n";
+    });
+    </script>
+</body>
+
+</html>

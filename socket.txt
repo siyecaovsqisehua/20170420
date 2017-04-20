@@ -1,0 +1,12 @@
+socket:插座
+	程序中：地址+端口号
+
+	弱交互：访问网页 http请求
+	强交互：网页游戏，端游（大部分都用socket） 实时聊天
+
+websocket模块
+socket.io模块：
+
+npm install socket.io
+
+全双工通讯
